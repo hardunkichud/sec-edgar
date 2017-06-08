@@ -15,9 +15,9 @@ class SecCrawler():
         self.hello = "Welcome to Sec Cralwer!"
         print("Path of the directory where data will be saved: " + DEFAULT_DATA_PATH)
 
-    def make_directory(self, company_code, cik, priorto, filing_type):
+    def make_directory(self, company_code, cik, qtr, filing_type):
         # Making the directory to save comapny filings
-        path = os.path.join(DEFAULT_DATA_PATH, company_code, cik, filing_type)
+        path = os.path.join(DEFAULT_DATA_PATH, company_code, cik, qtr, filing_type)
 
         if not os.path.exists(path):
             try:
@@ -26,22 +26,22 @@ class SecCrawler():
                 if exception.errno != errno.EEXIST:
                     raise
 
-    def save_in_directory(self, company_code, cik, priorto, doc_list,
+    def save_in_directory(self, company_code, cik, qtr, doc_list,
         doc_name_list, filing_type):
         # Save every text document into its respective folder
         for j in range(len(doc_list)):
             base_url = doc_list[j]
             r = requests.get(base_url)
             data = r.text
-            path = os.path.join(DEFAULT_DATA_PATH, company_code, cik,
+            path = os.path.join(DEFAULT_DATA_PATH, company_code, cik, qtr,
                 filing_type, doc_name_list[j])
 
             with open(path, "ab") as f:
                 f.write(data.encode('ascii', 'ignore'))
 
-    def filing_10Q(self, company_code, cik, priorto, count):
+    def filing_10Q(self, company_code, cik, qtr, count):
 
-        self.make_directory(company_code, cik, priorto, '10-Q')
+        self.make_directory(company_code, cik, qtr, '10-Q')
 
         # generate the url to crawl
         base_url = "http://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK="+str(cik)+"&type=10-Q&dateb="+str(priorto)+"&owner=exclude&output=xml&count="+str(count)
